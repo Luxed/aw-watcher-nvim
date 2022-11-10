@@ -14,12 +14,12 @@ local function get_current_git_branch(callback)
 
   vim.fn.jobstart({'git', 'branch', '--show-current', '--format="%(refname)"'}, {
     detach = true,
-    on_stdout = function(jobid, data, event)
+    on_stdout = function(_, data, _)
       if data[1] ~= '' then
         git_branch = data[1]
       end
     end,
-    on_exit = function(jobid, code, eventtype)
+    on_exit = function(_, code, _)
       if code ~= 0 then
         git_branch = ''
       end
@@ -61,6 +61,7 @@ local function heartbeat()
 
   local localtime = vim.fn.localtime()
   local timestamp = vim.fn.strftime('%FT%H:%M:%S%z')
+  -- TODO: In some cases we might not want the file path but something like the filetype or buftype (I.E. dir tree plugin, startify, fugitive, etc.)
   local file = vim.fn.expand('%p')
   local language = vim.bo.filetype
   -- TODO: Current project could also be determined using the current LSP project path.
