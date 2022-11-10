@@ -29,24 +29,6 @@ local function get_current_git_branch(callback)
   })
 end
 
-local function make_bucket_name()
-  local config = require('aw_watcher.config').get()
-  return string.format('aw-watcher-nvim_%s', config.hostname)
-end
-
-local function make_base_apiurl()
-  local config = require('aw_watcher.config').get()
-  return string.format('http://%s:%s/api/0', config.host, config.port)
-end
-
-local function make_bucket_apiurl()
-  return string.format('%s/buckets/%s', make_base_apiurl(), make_bucket_name())
-end
-
-local function make_heartbeat_apiurl()
-  return string.format('%s/heartbeat?pulsetime=30', make_bucket_apiurl())
-end
-
 local function handle_post_res(res)
   if res == 0 then
     vim.notify('aw-watcher-nvim: Failed to connect to aw-server, logging will be disabled. You can retry to connect with :AWStart', vim.log.levels.ERROR)
@@ -61,13 +43,13 @@ end
 local function create_bucket()
   local config = require('aw_watcher.config').get()
   local body = {
-    name = make_bucket_name(),
+    name = config.bucket_name,
     hostname = config.hostname,
     client = 'aw-watcher-nvim',
     type = 'app.editor.activity',
   }
 
-  require('aw_watcher.curl').post(make_bucket_apiurl(), body, handle_post_res)
+  require('aw_watcher.curl').post(config.urls.bucket, body, handle_post_res)
 end
 
 local last_file = ''
@@ -87,6 +69,7 @@ local function heartbeat()
 
   if file ~= last_file or (localtime - last_heartbeat) > 1 then
     get_current_git_branch(function(branch)
+      local config = require('aw_watcher.config').get()
       local body = {
         duration = 0,
         timestamp = timestamp,
@@ -98,7 +81,7 @@ local function heartbeat()
         }
       }
 
-      require('aw_watcher.curl').post(make_heartbeat_apiurl(), body, handle_post_res)
+      require('aw_watcher.curl').post(config.urls.heartbeat, body, handle_post_res)
       last_file = file
       last_heartbeat = localtime
     end)
