@@ -55,3 +55,5 @@ require('lualine').setup({
   },
 })
 ~~~
+
+You will also need a [nerd-font](https://www.nerdfonts.com/) patched font.
