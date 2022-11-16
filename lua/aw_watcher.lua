@@ -106,10 +106,5 @@ return {
   start = start,
   stop = stop,
   status = status,
-  statusline = {
-    status = function()
-      return connected and '祥' or '精'
-    end,
-    is_available = function() return connected end
-  },
+  is_connected = function() return connected end
 }
