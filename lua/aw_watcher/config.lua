@@ -1,19 +1,27 @@
 local M = {}
 
+local function get_or_default(val, default)
+  if val ~= nil then
+    return val
+  else
+    return default
+  end
+end
+
 function M.get()
   local config = {
-    autostart = vim.g.aw_autostart or true,
+    autostart = get_or_default(vim.g.aw_autostart, true),
 
-    create_autocommands = vim.g.aw_autocommands or true,
-    create_user_commands = vim.g.aw_user_commands or true,
+    create_autocommands = get_or_default(vim.g.aw_autocommands, true),
+    create_user_commands = get_or_default(vim.g.aw_user_commands, true),
 
-    host = vim.g.aw_apiurl_host or '127.0.0.1',
-    port = vim.g.aw_apiurl_port or '5600',
-    timeout = vim.g.aw_api_timeout or 2,
-    hostname = vim.g.aw_hostname or vim.fn.hostname(),
-    pulsetime = vim.g.aw_pulsetime_secs or 30,
+    host = get_or_default(vim.g.aw_apiurl_host, '127.0.0.1'),
+    port = get_or_default(vim.g.aw_apiurl_port, '5600'),
+    timeout = get_or_default(vim.g.aw_api_timeout, 2),
+    hostname = get_or_default(vim.g.aw_hostname, vim.fn.hostname()),
+    pulsetime = get_or_default(vim.g.aw_pulsetime_secs, 30),
 
-    branch = vim.g.aw_branch or false,
+    branch = get_or_default(vim.g.aw_branch, false),
   }
 
   config.bucket_name = string.format('aw-watcher-nvim_%s', config.hostname)
